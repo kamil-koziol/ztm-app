@@ -15,5 +15,5 @@ Web app for showing bus stops and buses real time arrivals and delays similar to
 ## Frontend
 
 - Vite + Vue.js using TypeScript
-- Tailwind.cs
-- E2E tests using Playwright
+- Tailwind.css
+- E2E tests using Playwright.js
