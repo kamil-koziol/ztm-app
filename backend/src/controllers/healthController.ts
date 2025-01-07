@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
+import { GetHealthResponse } from "./dto";
+import mongoose from "mongoose";
 
-export interface GetHealthResponse {
-  status: string;
-}
 
 export class HealthController {
   async getHealth(req: Request, res: Response) {
