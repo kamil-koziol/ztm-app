@@ -16,6 +16,8 @@ export class AuthService {
       username,
       password: hashedPassword,
     });
+
+    createdUser._id
     return {
       message: "User registered successfully",
       userId: createdUser._id.toString(),

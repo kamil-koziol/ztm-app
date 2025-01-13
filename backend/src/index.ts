@@ -1,4 +1,4 @@
-import express from "express";
+import express, {Router} from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import dotenv from 'dotenv';
@@ -6,6 +6,13 @@ import dotenv from 'dotenv';
 import { HealthController } from "./controllers/healthController";
 import { AuthController } from "./controllers/authController";
 import { AuthService } from "./services/authService";
+import { UserController } from "./controllers/usersController";
+import { UserService } from "./services/usersService";
+import { StopsService } from "./services/stopsService";
+import { CachingZTMClient, DefaultZTMClient } from "./lib/ztm/ztmClient";
+import { Cache, MemoryCache } from "./lib/cache/cache";
+import { StopsController } from "./controllers/stopsController";
+import { authMiddleware } from "./controllers/middleware/authMiddleware";
 
 dotenv.config();
 const app = express();
@@ -26,17 +33,39 @@ mongoose
 
 // DI
 
+let cache = new MemoryCache<string>()
+
+let ztmClient = new CachingZTMClient(cache, new DefaultZTMClient())
+
 let authService = new AuthService()
+let stopsService = new StopsService(ztmClient)
+let userService = new UserService(stopsService)
 
 let healthController = new HealthController();
 let authController = new AuthController(authService);
+let userController = new UserController(userService)
+let stopsController = new StopsController(stopsService)
 
 // Middleware
 app.use(bodyParser.json());
 
-app.get("/v1/health", (req, res) => healthController.getHealth(req, res));
-app.post("/v1/register", (req,res) => authController.registerUser(req, res));
-app.post("/v1/login", (req, res) => authController.loginUser(req, res));
+let publicRoutes = Router()
+
+publicRoutes.get("/v1/health", (req, res) => healthController.getHealth(req, res));
+publicRoutes.post("/v1/register", (req,res) => authController.registerUser(req, res));
+publicRoutes.post("/v1/login", (req, res) => authController.loginUser(req, res));
+
+let privateRoutes = Router()
+privateRoutes.use(authMiddleware)
+
+privateRoutes.get("/v1/users/:userId", (req, res) => userController.getUser(req, res))
+privateRoutes.get("/v1/users", (req, res) => userController.getUsers(req, res))
+privateRoutes.put("/v1/users/:userId", (req, res) => userController.updateUser(req, res))
+privateRoutes.get("/v1/stops", (req, res) => stopsController.getStops(req, res))
+privateRoutes.get("/v1/stops/:stopId", (req, res) => stopsController.getStop(req, res))
+
+app.use(publicRoutes)
+app.use(privateRoutes)
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

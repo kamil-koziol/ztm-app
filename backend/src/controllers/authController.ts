@@ -6,7 +6,7 @@ import {
   RegisterUserRequest,
   RegisterUserResponse,
 } from "./dto";
-import { getErrorMessage } from "../utils/utils";
+import { getErrorMessage, parseRequest } from "../utils/utils";
 import { AuthService } from "../services/authService";
 import { UserAlreadyExistsError } from "../services/errors";
 
@@ -18,16 +18,11 @@ export class AuthController {
   }
 
   async registerUser(req: Request, res: Response): Promise<void> {
-    const parsedBody = RegisterUserRequest.safeParse(req.body);
-    if (!parsedBody.success) {
-      res.status(400).json({
-        errors: parsedBody.error.errors.map((e) => e.message),
-      });
-      return;
-    }
+    const body = parseRequest(RegisterUserRequest, req.body, res);
+    if(!body) return
 
     try {
-      const { username, password } = parsedBody.data!;
+      const { username, password } = body;
       const result = await this.authService.register(username, password);
       res.status(201).json(result);
     } catch (error) {

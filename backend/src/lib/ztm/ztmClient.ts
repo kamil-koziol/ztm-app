@@ -68,12 +68,37 @@ export class DefaultZTMClient implements ZTMClient {
     private delaysUrl = "http://ckan2.multimediagdansk.pl/delays?stopId=";
 
     async fetchStops(): Promise<Stop[]> {
-        const response = await axios.get<Stop[]>(this.stopsUrl);
-        return response.data;
+        const response = await axios.get(this.stopsUrl);
+        let stops: Record<string, Stop> = {}
+        Object.keys(response.data).forEach((dateKey: string) => {
+            const day = response.data[dateKey]; 
+            day.stops.forEach((s: any) => {
+               let stop: Stop = {
+                   stopId: s["stopId"],
+                   stopCode: s["stopCode"],
+                   stopName: s["stopName"],
+                   type: s["type"]
+               }
+
+               stops[stop.stopId] = stop
+            });
+        })
+        return Object.values(stops)
     }
 
     async fetchDelays(stopId: string): Promise<Delay[]> {
-        const response = await axios.get<Delay[]>(`${this.delaysUrl}${stopId}`);
-        return response.data;
+        const response = await axios.get(`${this.delaysUrl}${stopId}`);
+        let delays: Delay[] = response.data.delay.map((d: any) => {
+            let delay: Delay = {
+                routeId: d["routeId"],
+                headsign: d["headsign"],
+                delayInSeconds: d["delayInSeconds"],
+                theoreticalTime: d["theoreticalTime"],
+                estimatedTime: d["estimatedTime"]
+            }
+            return delay
+        })
+
+        return delays;
     }
 }
