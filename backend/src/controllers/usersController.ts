@@ -1,6 +1,6 @@
 import { UserService } from "../services/usersService";
 import { Request, Response } from "express";
-import { UpdateUserRequest, ErrorResponse} from "./dto";
+import { UpdateUserRequest, ErrorResponse, GetUserResponse, GetUsersResponse} from "./dto";
 import { getErrorMessage, parseRequest } from "../utils/utils";
 
 export class UserController {
@@ -18,16 +18,27 @@ export class UserController {
             return
         }
 
-        res.status(200).json({"user": user})
+        let resp: GetUserResponse = {
+            user: user
+        }
+        res.status(200).json(resp)
     }
 
     async getUsers(req: Request, res: Response) {
         let users = await this.userService.getUsers()
-        res.status(200).json({"users": users})
+        let resp: GetUsersResponse = {
+            users: users
+        }
+        res.status(200).json(resp)
     }
 
     async updateUser(req: Request, res: Response) {
         const { userId } = req.params;
+        let requestUser: any = (req as any).user
+        if (requestUser.userId != userId) {
+            res.status(403).json({error: "user can only edit himself"})
+            return
+        }
 
         const body = parseRequest(UpdateUserRequest, req.body, res);
         if(!body) return
@@ -42,12 +53,15 @@ export class UserController {
             Object.assign(user, body);
 
             let updatedUser = await this.userService.updateUser(userId, user)
-            if(!user) {
+            if(!updatedUser) {
                 res.status(404).json({error: "user not found"})
                 return
             }
 
-            res.status(200).json({"user": updatedUser})
+            let resp: GetUserResponse = {
+                user: updatedUser
+            }
+            res.status(200).json(resp)
             return
         } catch(e) {
             let err: ErrorResponse = {

@@ -22,7 +22,7 @@ export class UserService {
     const hashedPassword = await bcrypt.hash(user.password, 10);
     user.password = hashedPassword;
 
-    if(await this.stopsService.validateStops(user.stops)) {
+    if(!await this.stopsService.validateStops(user.stops)) {
         throw new Error("invalid stops")
     }
 
