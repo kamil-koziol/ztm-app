@@ -4,6 +4,13 @@ import TheWelcome from '../components/TheWelcome.vue'
 
 <template>
   <main>
-    <TheWelcome />
+    <div>
+      <h1>
+        ZTM Stops
+      </h1>
+      <h3>
+        Monitor bus and tram stops in Gdańsk
+      </h3>
+    </div>
   </main>
 </template>
