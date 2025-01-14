@@ -1,4 +1,4 @@
-import { UserModel } from "../models/userModel";
+import { User, UserModel } from "../models/userModel";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { UserAlreadyExistsError } from "./errors";
@@ -24,7 +24,7 @@ export class AuthService {
     };
   }
 
-  async login(username: string, password: string): Promise<string> {
+  async login(username: string, password: string): Promise<{ token: string, user: User}> {
     const user = await UserModel.findOne({ username });
     if (!user) throw new Error("User not found");
 
@@ -34,6 +34,7 @@ export class AuthService {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, {
       expiresIn: "1h",
     });
-    return token;
+
+    return { token: token, user: user }
   }
 }

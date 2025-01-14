@@ -44,15 +44,7 @@ export class UserController {
         if(!body) return
 
         try {
-            let user = await this.userService.getUser(userId)
-            if(!user) {
-                res.status(404).json({error: "user not found"})
-                return
-            }
-
-            Object.assign(user, body);
-
-            let updatedUser = await this.userService.updateUser(userId, user)
+            let updatedUser = await this.userService.updateUser(userId, body)
             if(!updatedUser) {
                 res.status(404).json({error: "user not found"})
                 return

@@ -45,8 +45,8 @@ export class AuthController {
 
     try {
       const { username, password } = parsedBody.data!;
-      const token = await this.authService.login(username, password);
-      res.status(200).json({ token });
+      const { token, user } = await this.authService.login(username, password);
+      res.status(200).json({ token, user });
     } catch (error) {
       res.status(401).json({ error: getErrorMessage(error) });
     }

@@ -73,6 +73,8 @@ export class DefaultZTMClient implements ZTMClient {
         Object.keys(response.data).forEach((dateKey: string) => {
             const day = response.data[dateKey]; 
             day.stops.forEach((s: any) => {
+               if(s.type == "UNKNOWN") return;
+
                let stop: Stop = {
                    stopId: s["stopId"],
                    stopCode: s["stopCode"],

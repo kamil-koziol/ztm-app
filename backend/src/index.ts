@@ -2,6 +2,7 @@ import express, {Router} from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import dotenv from 'dotenv';
+import cors from 'cors'
 
 import { HealthController } from "./controllers/healthController";
 import { AuthController } from "./controllers/authController";
@@ -48,6 +49,7 @@ let stopsController = new StopsController(stopsService)
 
 // Middleware
 app.use(bodyParser.json());
+app.use(cors())
 
 let publicRoutes = Router()
 

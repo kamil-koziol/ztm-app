@@ -31,16 +31,4 @@ export class StopsService {
   async getStops(): Promise<Stop[]> {
     return this.ztmClient.fetchStops();
   }
-
-  // validateStops return array of id's of stops that are not known
-  async validateStops(stops: string[]): Promise<boolean> {
-    let hasDuplicates = (new Set(stops)).size !== stops.length;
-    if(hasDuplicates) {
-        return false
-    }
-    let allStops = await this.getStops()
-    let stopsIds = allStops.map(s => s.stopId)
-    
-    return !stops.every((s: string) => stopsIds.includes(s))
-  }
 }

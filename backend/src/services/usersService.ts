@@ -18,12 +18,19 @@ export class UserService {
     return UserModel.find({});
   }
 
-  async updateUser(userId: string, user: User): Promise<User | null> {
-    const hashedPassword = await bcrypt.hash(user.password, 10);
-    user.password = hashedPassword;
+  async updateUser(userId: string, updates: Partial<User>): Promise<User | null> {
+    let user = await this.getUser(userId)
+    if(!user) {
+        throw new Error("user does not exist")
+    }
 
-    if(!await this.stopsService.validateStops(user.stops)) {
-        throw new Error("invalid stops")
+    if(updates.password) {
+        const hashedPassword = await bcrypt.hash(user.password, 10);
+        user.password = hashedPassword;
+    }
+
+    if(updates.stops) {
+        user.stops = Array.from(new Set(updates.stops))
     }
 
     return await UserModel.findByIdAndUpdate(userId, { $set: user }, { new: true, runValidators: true });
