@@ -4,8 +4,8 @@ import TheWelcome from '../components/TheWelcome.vue'
 
 <template>
   <main>
-    <div>
-      <h1>
+    <div class="flex flex-col min-h-screen items-center justify-center">
+      <h1 class="text-4xl font-bold underline">
         ZTM Stops
       </h1>
       <h3>

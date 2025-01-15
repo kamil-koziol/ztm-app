@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import LoginView from "../views/LoginView.vue"
 import RegisterView from "../views/RegisterView.vue"
 import StopsView from "../views/StopsView.vue"
+import MyStopsView from "../views/MyStopsView.vue"
 import { useAuthStore } from '@/stores/auth';
 
 const router = createRouter({
@@ -38,11 +39,11 @@ const router = createRouter({
       component: StopsView,
       meta: { requiresAuth: true },
     },
-    // {
-    //   path: '/my/stops',
-    //   name: 'My Stops',
-    //   component: MyStopsView,
-    // },
+    {
+      path: '/my/stops',
+      name: 'My Stops',
+      component: MyStopsView,
+    },
   ],
 })
 
@@ -67,3 +68,4 @@ router.beforeEach((to, from, next) => {
 });
 
 export default router
+

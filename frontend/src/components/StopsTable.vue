@@ -1,14 +1,33 @@
 <template>
   <div class="stops-table">
     <!-- VueGoodTable component rendering the stops data -->
-    <vue-good-table :columns="columns" :rows="stops" :pagination="pagination">
+    <vue-good-table :columns="columns" :rows="stops" :pagination-options="{
+      enabled: true,
+      mode: 'records',
+      perPage: 15
+    }" :search-options="{
+          enabled: true,
+          trigger: 'enter',
+          }">
       <template #table-row="props">
         <span v-if="props.column.field == 'actions'">
           <span v-if="isUserStop(props.row.stopId)">
-            <button type="button" class="btn btn-danger" v-on:click="handleRemove(props.row)">Remove</button>
+<button
+  type="button"
+  class="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 w-24"
+  v-on:click="handleRemove(props.row)"
+>
+  Remove
+</button>
           </span>
           <span v-else>
-            <button type="button" class="btn btn-danger" v-on:click="handleAdd(props.row)">Add</button>
+<button
+  type="button"
+  class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 w-24"
+  v-on:click="handleAdd(props.row)"
+>
+  Add
+</button>
           </span>
         </span>
         <span v-else>
